@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Feedback Registration Form</title>
+    <link rel="stylesheet" href="feedback.css" />
+    <style>
+        .form-header h2 {
+            color: #d32f2f;
+            margin-bottom: 4px;
+            font-size: 22px;
+        }
+
+        .form-header p {
+            margin-bottom: 18px;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .radio-group,
+        .gender-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Symbiosis Institute of Technology</h1>
+            <p>Student Feedback Registration Form</p>
+        </div>
+
+        <div class="form-section">
+            <div id="successMessage">✅ Feedback submitted successfully.</div>
+
+            <form id="feedbackForm" novalidate>
+                <div class="form-header">
+                    <h2>Feedback Submission</h2>
+                    <p>Fill out the details below and provide your comments.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentName">Student Name <span style="color:red">*</span></label>
+                    <input type="text" id="studentName" name="studentName" placeholder="Enter your full name" />
+                    <div id="nameError" class="error-message">Name is required.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email ID <span style="color:red">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" />
+                    <div id="emailError" class="error-message">Please enter a valid email address.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobile">Mobile Number <span style="color:red">*</span></label>
+                    <input type="text" id="mobile" name="mobile" placeholder="Enter 10 digit mobile number" maxlength="10" />
+                    <div id="mobileError" class="error-message">Enter 10 digits only.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department <span style="color:red">*</span></label>
+                    <select id="department" name="department">
+                        <option value="">-- Select Department --</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                        <option value="Information Technology">Information Technology</option>
+                    </select>
+                    <div id="departmentError" class="error-message">Please select a department.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Gender <span style="color:red">*</span></label>
+                    <div class="gender-group">
+                        <div class="radio-item"><input type="radio" id="male" name="gender" value="Male" /><label for="male">Male</label></div>
+                        <div class="radio-item"><input type="radio" id="female" name="gender" value="Female" /><label for="female">Female</label></div>
+                        <div class="radio-item"><input type="radio" id="other" name="gender" value="Other" /><label for="other">Other</label></div>
+                    </div>
+                    <div id="genderError" class="error-message">Please select a gender.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="comments">Feedback Comments <span style="color:red">*</span></label>
+                    <textarea id="comments" name="comments" rows="4" placeholder="Enter your feedback (at least 10 words)"></textarea>
+                    <div id="commentsError" class="error-message">Feedback must be at least 10 words.</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submitBtn">Submit</button>
+                    <button type="reset" id="resetBtn">Reset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('feedbackForm');
+        const successMessage = document.getElementById('successMessage');
+
+        const studentName = document.getElementById('studentName');
+        const email = document.getElementById('email');
+        const mobile = document.getElementById('mobile');
+        const department = document.getElementById('department');
+        const comments = document.getElementById('comments');
+
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const mobileError = document.getElementById('mobileError');
+        const departmentError = document.getElementById('departmentError');
+        const genderError = document.getElementById('genderError');
+        const commentsError = document.getElementById('commentsError');
+
+        function resetErrors() {
+            [nameError, emailError, mobileError, departmentError, genderError, commentsError].forEach(e => e.classList.remove('show'));
+            [studentName, email, mobile, department, comments].forEach(el => el.classList.remove('error'));
+        }
+
+        function validateForm() {
+            let valid = true;
+            resetErrors();
+
+            if (studentName.value.trim().length === 0) {
+                nameError.classList.add('show');
+                studentName.classList.add('error');
+                valid = false;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email.value.trim())) {
+                emailError.classList.add('show');
+                email.classList.add('error');
+                valid = false;
+            }
+
+            const mobileDigits = mobile.value.trim();
+            if (!/^\d{10}$/.test(mobileDigits)) {
+                mobileError.classList.add('show');
+                mobile.classList.add('error');
+                valid = false;
+            }
+
+            if (department.value === '') {
+                departmentError.classList.add('show');
+                department.classList.add('error');
+                valid = false;
+            }
+
+            const genderChecked = Array.from(document.querySelectorAll('input[name="gender"]')).some(r => r.checked);
+            if (!genderChecked) {
+                genderError.classList.add('show');
+                valid = false;
+            }
+
+            const wordCount = comments.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            if (wordCount < 10) {
+                commentsError.classList.add('show');
+                comments.classList.add('error');
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (validateForm()) {
+                successMessage.classList.add('show');
+                const data = {
+                    studentName: studentName.value.trim(),
+                    email: email.value.trim(),
+                    mobile: mobile.value.trim(),
+                    department: department.value,
+                    gender: document.querySelector('input[name="gender"]:checked').value,
+                    comments: comments.value.trim(),
+                    submittedAt: new Date().toISOString()
+                };
+                localStorage.setItem('feedbackData', JSON.stringify(data));
+            } else {
+                successMessage.classList.remove('show');
+            }
+        });
+
+        form.addEventListener('reset', function () {
+            resetErrors();
+            successMessage.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
